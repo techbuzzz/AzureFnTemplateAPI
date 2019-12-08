@@ -1,4 +1,4 @@
-// GetAllLibraries
+// GetAllSubSites
 var request = require("request");
 var adal = require("adal-node");
 var fs = require("fs");
@@ -42,7 +42,7 @@ module.exports = function (context, req) {
 
 		var options = {
 			method: "GET",
-			uri: siteUrl + "/_api/Web/Lists?$filter=(BaseTemplate eq 101) and (EntityTypeName ne 'SiteAssets')",
+			uri: siteUrl + "/_api/Web/GetSubwebsFilteredForCurrentUser(nWebTemplateFilter=-1)?$filter=(WebTemplate ne 'APP')",
 			headers: {
 				'Authorization': 'Bearer ' + accesstoken,
 				'Accept': 'application/json; odata=verbose',

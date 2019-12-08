@@ -35,10 +35,16 @@ module.exports = function (context, req) {
         context.log(tokenResponse);
 
         var accesstoken = tokenResponse.accessToken;
-
+        var tenantName ="";
+        function splitStr(tenant) { 
+            // Function to split string 
+            var string = tenant.split("."); 
+            tenantName=string[0]; 
+        }
+        splitStr(tenant);
         var options = {
             method: "GET",
-            uri: "https://docsnode.sharepoint.com/_api/search/query?querytext=%27NOT%20Path:https://docsnode-my.sharepoint.com/personal/*%20contentclass:sts_site%27&selectproperties=%27Title,Path%27&rowLimit=499&TrimDuplicates=false",
+            uri:resource + "/_api/search/query?querytext=%27NOT%20Path:https://"+tenantName+"-my.sharepoint.com/personal/*%20contentclass:sts_site%27&selectproperties=%27Title,Path%27&rowLimit=499&TrimDuplicates=false",
             headers: {
                 'Authorization': 'Bearer ' + accesstoken,
                 'Accept': 'application/json; odata=verbose',
@@ -59,3 +65,4 @@ module.exports = function (context, req) {
     });
 };
 
+//note : check if we can get list of all site collection only where login user has access using single api call.

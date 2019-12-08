@@ -1,4 +1,4 @@
-// GetAllLibraries
+// GetPinnedItemByID
 var request = require("request");
 var adal = require("adal-node");
 var fs = require("fs");
@@ -9,12 +9,12 @@ module.exports = function (context, req) {
 	var authorityHostUrl = 'https://login.microsoftonline.com';
 	var tenant = ''; //'docsnode.com';
 	var resource = '';
-	var siteUrl = '';
+	var itemID = '';
 	
-	if (req.body && req.body.tenant && req.body.SPOUrl && req.body.SiteUrl) {
+	if (req.body && req.body.tenant && req.body.SPOUrl && req.body.ItemID) {
 		resource = req.body.SPOUrl;
 		tenant = req.body.tenant;
-		siteUrl = req.body.SiteUrl;
+		itemID = req.body.ItemID;
 	}
 
 	var authorityUrl = authorityHostUrl + '/' + tenant;
@@ -42,7 +42,7 @@ module.exports = function (context, req) {
 
 		var options = {
 			method: "GET",
-			uri: siteUrl + "/_api/Web/Lists?$filter=(BaseTemplate eq 101) and (EntityTypeName ne 'SiteAssets')",
+			uri: resource + "/_api/web/lists/GetByTitle('DocsNodePinnedLocations')/items(" + itemID + ")",
 			headers: {
 				'Authorization': 'Bearer ' + accesstoken,
 				'Accept': 'application/json; odata=verbose',

@@ -1,4 +1,4 @@
-// GetAllLibraries
+// GetCurrentUser
 var request = require("request");
 var adal = require("adal-node");
 var fs = require("fs");
@@ -9,12 +9,10 @@ module.exports = function (context, req) {
 	var authorityHostUrl = 'https://login.microsoftonline.com';
 	var tenant = ''; //'docsnode.com';
 	var resource = '';
-	var siteUrl = '';
 	
-	if (req.body && req.body.tenant && req.body.SPOUrl && req.body.SiteUrl) {
+	if (req.body && req.body.tenant && req.body.SPOUrl) {
 		resource = req.body.SPOUrl;
 		tenant = req.body.tenant;
-		siteUrl = req.body.SiteUrl;
 	}
 
 	var authorityUrl = authorityHostUrl + '/' + tenant;
@@ -42,7 +40,7 @@ module.exports = function (context, req) {
 
 		var options = {
 			method: "GET",
-			uri: siteUrl + "/_api/Web/Lists?$filter=(BaseTemplate eq 101) and (EntityTypeName ne 'SiteAssets')",
+			uri: resource + "/_api/web/currentuser",
 			headers: {
 				'Authorization': 'Bearer ' + accesstoken,
 				'Accept': 'application/json; odata=verbose',
