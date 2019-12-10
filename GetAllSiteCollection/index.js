@@ -45,6 +45,7 @@ module.exports = function (context, req) {
         var options = {
             method: "GET",
             uri:resource + "/_api/search/query?querytext=%27NOT%20Path:https://"+tenantName+"-my.sharepoint.com/personal/*%20contentclass:sts_site%27&selectproperties=%27Title,Path%27&rowLimit=499&TrimDuplicates=false",
+        //  uri:"https://graph.microsoft.com/v1.0//users/arijit@docsnode.com/memberOf",
             headers: {
                 'Authorization': 'Bearer ' + accesstoken,
                 'Accept': 'application/json; odata=verbose',
