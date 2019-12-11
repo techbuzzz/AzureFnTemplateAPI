@@ -2,8 +2,9 @@
 var request = require("request");
 var adal = require("adal-node");
 var fs = require("fs");
+var ctx = require("./contextInfo")
 
-module.exports = function (context, req) {
+module.exports = async function (context, req) {
 
 	var authorityHostUrl = 'https://login.microsoftonline.com';
 	var tenant = ''; //'docsnode.com';
@@ -35,48 +36,49 @@ module.exports = function (context, req) {
 	var clientId = process.env['Dev-AD-APP-ClientID'];
 	var thumbprint = process.env['Dev-Cert-Thumbprint'];
 
-	var authContext = new adal.AuthenticationContext(authorityUrl);
+//	var authContext = new adal.AuthenticationContext(authorityUrl);
+	var accessToken = await ctx.getReqDigest(tenant,resource);
 
-	authContext.acquireTokenWithClientCertificate(resource, clientId, certificate, thumbprint, function (err, tokenResponse) {
-		if (err) {
-			context.log('well that didn\'t work: ' + err.stack);
-			context.done();
-			return;
-		}
-		context.log(tokenResponse);
+	// authContext.acquireTokenWithClientCertificate(resource, clientId, certificate, thumbprint, function (err, tokenResponse) {
+	// 	if (err) {
+	// 		context.log('well that didn\'t work: ' + err.stack);
+	// 		context.done();
+	// 		return;
+	// 	}
+	// 	context.log(tokenResponse);
 
-		var accesstoken = tokenResponse.accessToken;
+	// //	var accesstoken = tokenResponse.accessToken;
+	// 	getReqDigest(tenant,SPOUrl);
+	// /*	var options = {
+	// 		method: "POST",
+	// 		async: false,
+	// 		uri: resource + "/_api/contextinfo",
+	// 		headers: {
+	// 			'Authorization': 'Bearer ' + accesstoken,
+	// 			'Accept': 'application/json; odata=verbose',
+	// 			'Content-Type': 'application/json; odata=verbose'
+	// 		}
+	// 	};
 
-	/*	var options = {
-			method: "POST",
-			async: false,
-			uri: resource + "/_api/contextinfo",
-			headers: {
-				'Authorization': 'Bearer ' + accesstoken,
-				'Accept': 'application/json; odata=verbose',
-				'Content-Type': 'application/json; odata=verbose'
-			}
-		};
-
-		context.log(options);
-		request(options, function (error, res, body) {
-			context.log(error);
-			reqDigest = JSON.parse(body).d.GetContextWebInformation.FormDigestValue;
-        }); */
+	// 	context.log(options);
+	// 	request(options, function (error, res, body) {
+	// 		context.log(error);
+	// 		reqDigest = JSON.parse(body).d.GetContextWebInformation.FormDigestValue;
+    //     }); */
         
-	});
+	// });
 	
-	var authContextCreate = new adal.AuthenticationContext(authorityUrl);
+	// var authContextCreate = new adal.AuthenticationContext(authorityUrl);
 
-	authContextCreate.acquireTokenWithClientCertificate(resource, clientId, certificate, thumbprint, function (err, tokenResponse) {
-		if (err) {
-			context.log('well that didn\'t work: ' + err.stack);
-			context.done();
-			return;
-		}
+	// authContextCreate.acquireTokenWithClientCertificate(resource, clientId, certificate, thumbprint, function (err, tokenResponse) {
+	// 	if (err) {
+	// 		context.log('well that didn\'t work: ' + err.stack);
+	// 		context.done();
+	// 		return;
+	// 	}
 		
-		context.log(tokenResponse);
-		var accesstoken = tokenResponse.accessToken;
+	// 	context.log(tokenResponse);
+	// 	var accesstoken = tokenResponse.accessToken;
         var itemProperties = JSON.stringify  
                             ({  
                                 __metadata:  
@@ -107,7 +109,7 @@ module.exports = function (context, req) {
 			uri: resource + "/_api/web/lists/getbytitle('DocsNodePinnedLocations')/items",
 			body: itemProperties,
 			headers: {
-				'Authorization': 'Bearer ' + accesstoken,
+				'Authorization': 'Bearer ' + accessToken,
 				'Accept': 'application/json; odata=verbose',
 				'Content-Type': 'application/json; odata=verbose',
 				'X-RequestDigest': reqDigest,
@@ -124,5 +126,5 @@ module.exports = function (context, req) {
 			};
 			context.done();
 		});
-	});
+//	});
 };
