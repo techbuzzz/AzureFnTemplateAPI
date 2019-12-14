@@ -39,8 +39,8 @@ module.exports = function (context, req) {
 	var accessToken = '';
 	// const asyncFunction = util.promisify(ctx.getReqDigest);
 
-	ctx.getReqDigest(context, tenant, resource).then(accessToken => {
-		console.log(accessToken);
+	ctx.getReqDigest(context, tenant, resource).then(result => {
+		//console.log(accessToken);
 		var itemProperties = JSON.stringify({
 			__metadata: {
 				type: "SP.Data.DocsNodePinnedLocationsListItem"
@@ -71,10 +71,10 @@ module.exports = function (context, req) {
 			uri: resource + "/_api/web/lists/getbytitle('DocsNodePinnedLocations')/items",
 			body: itemProperties,
 			headers: {
-				'Authorization': 'Bearer ' + accessToken,
+				'Authorization': 'Bearer ' + result.accessToken,
 				'Accept': 'application/json; odata=verbose',
 				'Content-Type': 'application/json; odata=verbose',
-				'X-RequestDigest': reqDigest,
+			//	'X-RequestDigest': result.digestVal,
 				'X-HTTP-Method': 'POST'
 			}
 		};

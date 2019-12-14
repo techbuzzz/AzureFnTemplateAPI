@@ -30,7 +30,31 @@ exports.getReqDigest = function getReqDigest(context, tenant, resource) {
 					context.done();
 					return;
 				}
-				resolve(tokenResponse.accessToken);
+				
+				var options = {
+                    method: "POST",
+                    uri: resource + "/_api/contextinfo",
+                    headers: {
+                        'Authorization': 'Bearer ' + tokenResponse.accessToken,
+                        'Accept': 'application/json; odata=verbose',
+                        'Content-Type': 'application/json; odata=verbose'
+                    }
+                };
+
+
+                context.log(options);
+                request(options, function (error, res, body) {
+                    // context.log(error);
+                    // context.log(body);
+                    // context.res = {
+                    //     body: body || ''
+                    // };
+					// context.done();
+					var digestValuFormat = JSON.parse(body);
+					var res = {accessToken:tokenResponse.accessToken,digestVal:digestValuFormat.d.GetContextWebInformation.FormDigestValue}
+					
+					resolve(res);
+                });
 
 				// return tokenResponse.accessToken;
 			});
