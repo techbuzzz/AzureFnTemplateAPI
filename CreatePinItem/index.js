@@ -2,6 +2,7 @@
 var request = require("request");
 var adal = require("adal-node");
 var fs = require("fs");
+// const util = require('util');
 var ctx = require("./contextInfo")
 
 module.exports = function (context, req) {
@@ -36,7 +37,8 @@ module.exports = function (context, req) {
 	var clientId = process.env['Dev-AD-APP-ClientID'];
 	var thumbprint = process.env['Dev-Cert-Thumbprint'];
 	var accessToken = '';
-	
+	// const asyncFunction = util.promisify(ctx.getReqDigest);
+
 	ctx.getReqDigest(context, tenant, resource).then(accessToken => {
 		console.log(accessToken);
 		var itemProperties = JSON.stringify({
@@ -87,4 +89,54 @@ module.exports = function (context, req) {
 				context.done();
 			});
 	});
+
+
+
+	//	var authContext = new adal.AuthenticationContext(authorityUrl);
+
+
+	// authContext.acquireTokenWithClientCertificate(resource, clientId, certificate, thumbprint, function (err, tokenResponse) {
+	// 	if (err) {
+	// 		context.log('well that didn\'t work: ' + err.stack);
+	// 		context.done();
+	// 		return;
+	// 	}
+	// 	context.log(tokenResponse);
+
+	// //	var accesstoken = tokenResponse.accessToken;
+	// 	getReqDigest(tenant,SPOUrl);
+	// /*	var options = {
+	// 		method: "POST",
+	// 		async: false,
+	// 		uri: resource + "/_api/contextinfo",
+	// 		headers: {
+	// 			'Authorization': 'Bearer ' + accesstoken,
+	// 			'Accept': 'application/json; odata=verbose',
+	// 			'Content-Type': 'application/json; odata=verbose'
+	// 		}
+	// 	};
+
+	// 	context.log(options);
+	// 	request(options, function (error, res, body) {
+	// 		context.log(error);
+	// 		reqDigest = JSON.parse(body).d.GetContextWebInformation.FormDigestValue;
+	//     }); */
+
+	// });
+
+	// var authContextCreate = new adal.AuthenticationContext(authorityUrl);
+
+	// authContextCreate.acquireTokenWithClientCertificate(resource, clientId, certificate, thumbprint, function (err, tokenResponse) {
+	// 	if (err) {
+	// 		context.log('well that didn\'t work: ' + err.stack);
+	// 		context.done();
+	// 		return;
+	// 	}
+
+	// 	context.log(tokenResponse);
+	// 	var accesstoken = tokenResponse.accessToken;
+	
+
+
+	//	});
 };
