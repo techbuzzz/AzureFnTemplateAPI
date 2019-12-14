@@ -2,6 +2,7 @@
 var request = require("request");
 var adal = require("adal-node");
 var fs = require("fs");
+var ctx = require("./updateAuthor");
 
 module.exports = function (context, req) {
 
@@ -50,75 +51,15 @@ module.exports = function (context, req) {
 		}
 		context.log(tokenResponse);
 
-		var accesstoken = tokenResponse.accessToken;
+		var getSuccessMsg= "";
 
-	/*	var options = {
-			method: "POST",
-			async: false,
-			uri: resource + "/_api/contextinfo",
-			headers: {
-				'Authorization': 'Bearer ' + accesstoken,
-				'Accept': 'application/json; odata=verbose',
-				'Content-Type': 'application/json; odata=verbose'
-			}
-		};
-
-		context.log(options);
-		request(options, function (error, res, body) {
-			context.log(error);
-			reqDigest = JSON.parse(body).d.GetContextWebInformation.FormDigestValue;
-        }); */
-        
-	});
-	
-	var authContextCreate = new adal.AuthenticationContext(authorityUrl);
-
-	authContextCreate.acquireTokenWithClientCertificate(resource, clientId, certificate, thumbprint, function (err, tokenResponse) {
-		if (err) {
-			context.log('well that didn\'t work: ' + err.stack);
-			context.done();
-			return;
-		}
-		
-		context.log(tokenResponse);
-        var accesstoken = tokenResponse.accessToken;
-        
-        var itemProperties = JSON.stringify  
-                            ({  
-                                __metadata:  
-                                {  
-                                    type: listItemEntityType
-                                },  
-                                AuthorId:userID,
-                                Title:"XYZ",
-                            });
-
-
-		var options = {
-			method: "POST",
-			async: false,
-			uri: siteUrl + "/_api/web/lists/getbytitle('"+documentLibrary+"')/getItemByStringId('"+itemID+"')",
-			body: itemProperties,
-			headers: {
-				'Authorization': 'Bearer ' + accesstoken,
-				'Accept': 'application/json; odata=verbose',
-				'Content-Type': 'application/json; odata=verbose',
-                'X-RequestDigest': reqDigest,
-                'IF-MATCH': '*',
-                'X-Http-Method': 'PATCH'
-
-			//	'X-HTTP-Method': 'POST'
-			}
-		};
-
-		context.log(options);
-		request(options, function (error, res, body) {
-			context.log(error);
-			context.log(body);
+		ctx.updateAuthor(context, tenant, resource,userID).then(result => {
+			getSuccessMsg=result.success;
 			context.res = {
-				body: body || ''
+				body: getSuccessMsg || ''
 			};
 			context.done();
 		});
+
 	});
 };
