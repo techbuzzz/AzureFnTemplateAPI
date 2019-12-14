@@ -3,10 +3,9 @@ var adal = require("adal-node");
 var fs = require("fs");
 
 
-exports.getReqDigest = async function getReqDigest(tenant,resource)
-{
-    var authorityHostUrl = 'https://login.microsoftonline.com';
-    var authorityUrl = authorityHostUrl + '/' + tenant;
+exports.getReqDigest = function getReqDigest(context, tenant, resource) {
+	var authorityHostUrl = 'https://login.microsoftonline.com';
+	var authorityUrl = authorityHostUrl + '/' + tenant;
 
 	//var resource = 'https://docsnode.sharepoint.com';
 
@@ -18,15 +17,23 @@ exports.getReqDigest = async function getReqDigest(tenant,resource)
 	var thumbprint = process.env['Dev-Cert-Thumbprint'];
 
 	var authContext = new adal.AuthenticationContext(authorityUrl);
-    
-   return await authContext.acquireTokenWithClientCertificate(resource, clientId, certificate, thumbprint, function (err, tokenResponse) {
-		if (err) {
-			context.log('well that didn\'t work: ' + err.stack);
-			context.done();
-			return;
-		}
-		context.log(tokenResponse);
 
-		return tokenResponse.accessToken;
-});
+	var accessToken = '';
+
+	// return 1;
+
+	return new Promise((resolve, reject) => {
+		return authContext.acquireTokenWithClientCertificate(resource, clientId, certificate, thumbprint,
+			function (err, tokenResponse) {
+				if (err) {
+					context.log('well that didn\'t work: ' + err.stack);
+					context.done();
+					return;
+				}
+				resolve(tokenResponse.accessToken);
+
+				// return tokenResponse.accessToken;
+			});
+	});
+
 }
