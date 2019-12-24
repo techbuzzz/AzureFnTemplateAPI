@@ -64,14 +64,15 @@ exports.updateAuthor = function updateAuthor(context, tenant, resource,userID) {
 					// context.done();
 				
 					var itemProperties = JSON.stringify  
-					({  
-						__metadata:  
-						{  
-							type: listItemEntityType
-						},  
-						EditorId:"12",
-						Title:"ABC",
-					});
+										({  
+											__metadata:  
+											{  
+												type: listItemEntityType
+											},
+											'EditorId': 12,
+											'Title':"Tesing12345",
+											'_CreatorStringId': "12"
+										});
 
 
 					var optUser = {
@@ -79,12 +80,13 @@ exports.updateAuthor = function updateAuthor(context, tenant, resource,userID) {
 						async: false,
 						//uri: siteUrl + "/_api/web/lists/getbytitle('"+documentLibrary+"')/getItemByStringId('"+itemID+"')",
 						uri: "https://docsnode.sharepoint.com/_api/web/lists/getbytitle('DocsNodePinnedLocations')/items/getById(28)",
+					//	uri: "https://docsnode.sharepoint.com/sites/KnutSiteColl/_api/web/lists/getbytitle('AuthorUpdateList')/items/getById(1)",
 						body: itemProperties,
 						headers: {
 							'Authorization': 'Bearer ' + tokenResponse.accessToken,
 							'Accept': 'application/json; odata=verbose',
 							'Content-Type': 'application/json; odata=verbose',
-							//'X-RequestDigest': reqDigest,
+							'X-RequestDigest': reqDigest,
 							'IF-MATCH': '*',
 							'X-Http-Method': 'PATCH'
 
@@ -108,7 +110,7 @@ exports.updateAuthor = function updateAuthor(context, tenant, resource,userID) {
 									// Type that you are modifying.
 									'type': 'SP.FieldUser'
 								},
-								'ReadOnlyField': true
+								'ReadOnlyField': false
 							}),
 						};
 						request(optionsSetTrue, function (error, res, body) {

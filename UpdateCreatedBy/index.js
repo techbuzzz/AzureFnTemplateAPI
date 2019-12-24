@@ -1,33 +1,27 @@
-// CreateListItem
+// UpdateCreatedBy
 var request = require("request");
 var adal = require("adal-node");
 var fs = require("fs");
-var ctx = require("./updateAuthor");
+var csomapi = require('csom-node');
+
 
 module.exports = function (context, req) {
 
 	var authorityHostUrl = 'https://login.microsoftonline.com';
 	var tenant = ''; //'docsnode.com';
 	var resource = '';
-	var reqDigest = '';
-    var documentLibrary ='';
-    //var documentLibraryUrl='';
-    var siteUrl ='';
-    var itemID;
-    var userID;
-    var listItemEntityType = "SP.Data.DocsNodePinnedLocationsListItem";
-    if(req.body && req.body.ListItemEntityType )
-    {
-        listItemEntityType=req.body.ListItemEntityType;
-    }
-	if (req.body && req.body.tenant && req.body.SPOUrl) {
+	var siteUrl = '';
+	var listName = '';
+	var itemID = '';
+	var userID = '';
+	
+	if (req.body && req.body.tenant && req.body.SPOUrl && req.body.ItemID) {
 		resource = req.body.SPOUrl;
-        tenant = req.body.tenant;
-        reqDigest =req.body.ReqDigest;
-        documentLibrary=req.body.DocumentLibrary;
-        itemID=req.body.ItemID;
-        siteUrl=req.body.SiteUrl;
-        userID=req.body.UserID;
+		tenant = req.body.tenant;
+		siteUrl = req.body.SiteUrl;
+		listName = req.body.ListName;
+		itemID = req.body.ItemID;
+		userID = req.body.UserID;
 	}
 
 	var authorityUrl = authorityHostUrl + '/' + tenant;
@@ -43,6 +37,8 @@ module.exports = function (context, req) {
 
 	var authContext = new adal.AuthenticationContext(authorityUrl);
 
+	var authCtx = new AuthenticationContext(resource);
+
 	authContext.acquireTokenWithClientCertificate(resource, clientId, certificate, thumbprint, function (err, tokenResponse) {
 		if (err) {
 			context.log('well that didn\'t work: ' + err.stack);
@@ -51,15 +47,33 @@ module.exports = function (context, req) {
 		}
 		context.log(tokenResponse);
 
-		var getSuccessMsg= "";
-
-		ctx.updateAuthor(context, tenant, resource,userID).then(result => {
-			getSuccessMsg=result.success;
-			context.res = {
-				body: getSuccessMsg || ''
-			};
-			context.done();
-		});
-
+		authCtx.appAccessToken=tokenResponse.accessToken;
+		var accesstoken = tokenResponse.accessToken;
+		
+		var ctx = new SP.ClientContext("/");  //set root web
+		authCtx.setAuthenticationCookie(ctx);  //authenticate
+		
+		//retrieve SP.Web client object
+		//var web = ctx.get_web();
+	//	var list = ctx.get_web().get_lists().getByTitle(listName);
+	//	var item = list.getItemById(itemID);
+	//	item.set_item("Editor", userID);
+	//	item.update();
+		  
+		//ctx.load(web);
+		
+		var web = ctx.get_web();
+        ctx.load(web);
+        ctx.executeQueryAsync(function () {
+            azureContext.log(web.get_title());
+            azureContext.res = { body: "Success!" };
+            azureContext.done();
+        },
+        function (sender, args) {
+            azureContext.log('An error occured: ' + args.get_message());
+            azureContext.res = { status: 500, body: "Error!" };
+            azureContext.done();
+        });
+		
 	});
 };
