@@ -10,13 +10,13 @@ module.exports = function (context, req) {
 	var tenant = ''; //'docsnode.com';
 	var resource = '';
     var siteUrl = '';
-    var teamID='';
+    var folderRelPath='';  //(e.g : Shared Documents/test)
 	
-	if (req.body && req.body.tenant && req.body.SPOUrl) {
+	if (req.body && req.body.tenant && req.body.SPOUrl && req.body.SiteUrl) {
 		resource = req.body.SPOUrl;
 		tenant = req.body.tenant;
         siteUrl = req.body.SiteUrl;
-        teamID=req.body.TeamID;
+        folderRelPath=req.body.FolderRelPath;
 	}
 
 	var authorityUrl = authorityHostUrl + '/' + tenant;
@@ -44,10 +44,11 @@ module.exports = function (context, req) {
 
 		var options = {
 			method: "GET",
-			uri: "https://graph.microsoft.com/v1.0/teams/"+teamID+"/channels",
+			uri: siteUrl + "/_api/web/GetFolderByServerRelativeUrl('"+folderRelPath+"')/folders",
 			headers: {
 				'Authorization': 'Bearer ' + accesstoken,
-				'Accept': 'application/json;odata.metadata=full'
+				'Accept': 'application/json; odata=verbose',
+				'Content-Type': 'application/json; odata=verbose'
 			}
 		};
 

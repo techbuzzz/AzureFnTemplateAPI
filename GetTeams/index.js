@@ -8,9 +8,11 @@ module.exports = function (context, req) {
     var authorityHostUrl = 'https://login.microsoftonline.com';
     var tenant = ''; //'docsnode.com';
     var resource = '';
+    var UsrGuid='';
     if (req.body && req.body.tenant && req.body.SPOUrl) {
         resource = req.body.SPOUrl;
         tenant = req.body.tenant;
+        UsrGuid=req.body.UsrGUID;
     }
 
     var authorityUrl = authorityHostUrl + '/' + tenant;
@@ -38,11 +40,10 @@ module.exports = function (context, req) {
 
         var options = {
             method: "GET",
-            uri: "https://graph.microsoft.com/beta/groups?$filter=resourceProvisioningOptions/Any(x:x eq 'Team')",
+            uri: "https://graph.microsoft.com/v1.0/users/"+ UsrGuid+"/joinedteams",
             headers: {
                 'Authorization': 'Bearer ' + accesstoken,
-                'Accept': 'application/json; odata=verbose',
-                'Content-Type': 'application/json; odata=verbose'
+                'Accept': 'application/json;odata.metadata=full'
             }
         };
 
