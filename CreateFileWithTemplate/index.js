@@ -11,19 +11,24 @@ module.exports = function (context, req) {
 	var sourceSite = '';
 	var destSite = '';
 	var sourceFileRelUrl = '';
+	var sourceFileName = '';
 	var destFolderRelUrl = '';
 	var fileName = '';
 	
     if (req.body && req.body.tenant && req.body.SPOUrl) {
         resource = req.body.SPOUrl;
         tenant = req.body.tenant;
-		sourceSite = req.body.SourceSite;
 		destSite = req.body.DestSite;
-		sourceFileRelUrl = req.body.SourceFileRelUrl;
 		destFolderRelUrl = req.body.DestFolderRelUrl;
 		fileName = req.body.FileName;
+		sourceFileName = req.body.sourceFileName;
     }
 
+	sourceSite = resource + "/sites/docsnodeadmin";
+	sourceFileRelUrl = "/sites/docsnodeadmin/DocsNodeTemplatesLibrary/" + sourceFileName;
+	var fileExtension = sourceFileName.split('.');
+	var fileExt = fileExtension[fileExtension.length-1];
+	fileName = fileName +"." +fileExt;
     var authorityUrl = authorityHostUrl + '/' + tenant;
 
     //var resource = 'https://docsnode.sharepoint.com';
@@ -83,8 +88,9 @@ module.exports = function (context, req) {
 					    request(options, function (error, res, body) {
 							context.log(error);
 							context.log(body);
+							var retData = JSON.parse(body);
 							context.res = {
-								body: body || ''
+								body: retData.d.LinkingUrl || ''
 							};
 							context.done();
 					});
