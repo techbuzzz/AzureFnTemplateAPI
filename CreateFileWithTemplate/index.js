@@ -71,7 +71,7 @@ module.exports = function (context, req) {
 				if(sampleBytes.length > 0)
 				{
 					// Construct the endpoint.
-					var fileCollectionEndpoint = destSite +"/_api/web/getfolderbyserverrelativeurl('"+destFolderRelUrl+"')/files"+"/add(overwrite=true, url='"+fileName+"')";
+					var fileCollectionEndpoint = destSite +"/_api/web/getfolderbyserverrelativeurl('"+destFolderRelUrl+"')/files"+"/add(overwrite=false, url='"+fileName+"')";
 					options = {
 								method: "POST",
 								uri: fileCollectionEndpoint,
@@ -90,7 +90,7 @@ module.exports = function (context, req) {
 							context.log(body);
 							var retData = JSON.parse(body);
 							context.res = {
-								body: retData.d.LinkingUrl || ''
+								body: retData || ''
 							};
 							context.done();
 					});
