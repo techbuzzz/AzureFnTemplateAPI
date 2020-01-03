@@ -58,12 +58,8 @@ module.exports = function (context, req) {
 			encoding: null,
             headers: {
                 'Authorization': 'Bearer ' + accesstoken
-              //  'Accept': 'application/json; odata=verbose',
-               // 'Content-Type': 'application/json; odata=verbose'
             }
         };
-
-
         context.log(options);
         request(options, function (error, res, body) {
             context.log(error);
@@ -81,18 +77,43 @@ module.exports = function (context, req) {
 									'Authorization': 'Bearer ' + accesstoken,
 									'Accept': 'application/json; odata=verbose',
 									'Content-Type': 'application/json; odata=verbose'
-								//	'Content-Length': body.byteLength
 								}
 							};
-							
+						context.log(options);
 					    request(options, function (error, res, body) {
+						context.log(error);
+						var formatJSON = JSON.parse(body);
+						if(formatJSON.error===undefined)
+						{
+							
+						//	var fileURL = destSite +"_api/web/lists/getbytitle('"+ destFolderRelUrl +"')/Items?$filter=FileLeafRef eq '"+ fileName +"'&$select*";
+							options = {
+								method: "GET",
+								uri: formatJSON.d.ListItemAllFields.__deferred.uri,
+							//	encoding: null,
+								headers: {
+									'Authorization': 'Bearer ' + accesstoken
+								}
+							};
+							context.log(options);    
+							request(options, function (error, res, body) {
 							context.log(error);
 							context.log(body);
-							var retData = JSON.parse(body);
 							context.res = {
-								body: retData || ''
+								body: body || ''
 							};
 							context.done();
+						});
+					}
+					else
+					{
+						context.log(error);
+						context.log(body);
+						context.res = {
+										body: body || ''
+									};
+						context.done();
+					}
 					});
 				}
 				else
