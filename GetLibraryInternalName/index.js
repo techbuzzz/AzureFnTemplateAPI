@@ -16,7 +16,8 @@ module.exports = function (context, req) {
     }
 
     var authorityUrl = authorityHostUrl + '/' + tenant;
-    var teamUrl= resource+"/sites/"+team;
+    var teamUrl= resource+"/sites/"+team +"/_api/Web/Lists?$select=EntityTypeName&$filter=(BaseTemplate eq 101) and (EntityTypeName ne 'SiteAssets') and (Title eq 'Documents')";
+    context.log(teamUrl);
 
     //var resource = 'https://docsnode.sharepoint.com';
 
@@ -47,7 +48,7 @@ module.exports = function (context, req) {
         splitStr(tenant);
         var options = {
             method: "GET",
-            uri:teamUrl+"/_api/Web/Lists?$select=EntityTypeName&$filter=(BaseTemplate eq 101) and (EntityTypeName ne 'SiteAssets') and (Title eq 'Documents')",
+            uri:teamUrl,
         //  uri:"https://graph.microsoft.com/v1.0//users/arijit@docsnode.com/memberOf",
             headers: {
                 'Authorization': 'Bearer ' + accesstoken,
