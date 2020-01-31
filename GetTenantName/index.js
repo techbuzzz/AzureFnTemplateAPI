@@ -8,16 +8,14 @@ module.exports = function (context, req) {
     var authorityHostUrl = 'https://login.microsoftonline.com';
     var tenant = ''; //'docsnode.com';
     var resource = '';
-    var team='';
+  //  var UsrGuid='';
     if (req.body && req.body.tenant && req.body.SPOUrl) {
         resource = req.body.SPOUrl;
         tenant = req.body.tenant;
-        team=req.body.Team;
+      //  UsrGuid=req.body.UsrGUID;
     }
 
     var authorityUrl = authorityHostUrl + '/' + tenant;
-    var teamUrl= resource+"/sites/"+team +"/_api/Web/Lists?$select=EntityTypeName&$filter=(BaseTemplate eq 101) and (Title eq 'Dokumenter')";
-    context.log(teamUrl);
 
     //var resource = 'https://docsnode.sharepoint.com';
 
@@ -27,7 +25,7 @@ module.exports = function (context, req) {
     });
     var clientId = process.env['Dev-AD-APP-ClientID'];
     var thumbprint = process.env['Dev-Cert-Thumbprint'];
-   
+
     var authContext = new adal.AuthenticationContext(authorityUrl);
 
     authContext.acquireTokenWithClientCertificate(resource, clientId, certificate, thumbprint, function (err, tokenResponse) {
@@ -39,14 +37,13 @@ module.exports = function (context, req) {
         context.log(tokenResponse);
 
         var accesstoken = tokenResponse.accessToken;
-      
+
         var options = {
             method: "GET",
-            uri:teamUrl,
+            uri: "https://graph.microsoft.com/v1.0/organization",
             headers: {
                 'Authorization': 'Bearer ' + accesstoken,
-                'Accept': 'application/json; odata=verbose',
-                'Content-Type': 'application/json; odata=verbose'
+                'Accept': 'application/json;odata.metadata=full'
             }
         };
 
